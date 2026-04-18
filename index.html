@@ -356,6 +356,17 @@
 
     <div class="p-5 flex flex-col gap-4">
 
+      <!-- Frase de impacto -->
+      <div class="flex flex-col gap-1.5">
+        <label class="field-label justify-between">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-bolt" style="color:#25d366"></i> Frase de Impacto</span>
+          <input type="checkbox" class="field-toggle" x-model="showOpeningPhrase" />
+        </label>
+        <div :class="!showOpeningPhrase && 'field-disabled'">
+          <input type="text" class="field-input" x-model="openingPhrase" placeholder="Ex: QUE PREÇO É ESSE, BRASILLL?! 😱" />
+        </div>
+      </div>
+
       <!-- Plataforma -->
       <div class="flex flex-col gap-1.5">
         <label class="field-label"><i class="fa-solid fa-store"></i> Plataforma</label>
@@ -687,6 +698,8 @@
   function cuponsApp() {
     return {
       /* campos do form */
+      openingPhrase:     'QUE PREÇO É ESSE, BRASILLL?! 😱😱😱',
+      showOpeningPhrase: true,
       platform:      'mercadolivre',
       productName:   '',
       originalPrice: '',
@@ -762,7 +775,7 @@
         const name = this.productName || 'Produto';
         let msg = '';
 
-        msg += `QUE PREÇO É ESSE, BRASILLL?! 😱😱😱\n\n`;
+        if (this.showOpeningPhrase && this.openingPhrase) msg += `${this.openingPhrase}\n\n`;
         msg += `🛍️ ${name}\n\n`;
 
         if (this.showOriginalPrice && this.originalPrice) msg += `~~De R$ ${this.originalPrice}~~\n`;
@@ -901,6 +914,8 @@
         this.payment = 'Pix';
         this.imageDataUrl = '';
         this.currentMessage = '';
+        this.openingPhrase = 'QUE PREÇO É ESSE, BRASILLL?! 😱😱😱';
+        this.showOpeningPhrase = true;
         this.showOriginalPrice = this.showCoupon = this.showDiscount = true;
         this.showLink = this.showNotes = this.showImage = true;
         this.toast('🗑️ Formulário limpo!', 'success');
