@@ -759,48 +759,24 @@
 
       /* ── construir texto ── */
       buildMessage() {
-        const pd = this.platformData;
         const name = this.productName || 'Produto';
         let msg = '';
 
-        msg += `${pd.emoji} *${name}* 🔥\n`;
-        if (pd.name) msg += `📍 ${pd.name}\n`;
-        msg += '\n';
+        msg += `QUE PREÇO É ESSE, BRASILLL?! 😱😱😱\n\n`;
+        msg += `🛍️ ${name}\n\n`;
 
-        if (this.showOriginalPrice && this.originalPrice) msg += `~~💸 De: R$ ${this.originalPrice}~~\n`;
-        msg += `✅ *Por: R$ ${this.finalPrice || '0,00'}* no *${this.payment}*\n\n`;
+        if (this.showOriginalPrice && this.originalPrice) msg += `~~De R$ ${this.originalPrice}~~\n`;
+        msg += `🔥 APENAS R$ ${this.finalPrice || '0,00'}\n\n`;
 
-        const hasCoupon = this.showCoupon && this.coupon;
-        if (hasCoupon) {
-          msg += `🎟️ *Cupom:* \`${this.coupon}\``;
-          if (this.showDiscount && this.discount) msg += ` → *${this.discount} OFF*`;
-          msg += '\n\n';
-        }
+        if (this.showCoupon && this.coupon) msg += `🎟️ Cupom: ${this.coupon}\n\n`;
 
-        if (this.showLink && this.link) msg += `🔗 *Link do produto:*\n${this.link}\n\n`;
+        if (this.payment === 'Pix') msg += `⚠️ Pagando com Pix tem mais desconto ainda!\n\n`;
 
-        msg += `📋 *Como usar:*\n`;
-        msg += `1️⃣ Acesse o link acima\n`;
-        msg += `2️⃣ Adicione o produto ao carrinho\n`;
-        if (hasCoupon) {
-          msg += `3️⃣ No checkout, insira o cupom: *${this.coupon}*\n`;
-          msg += `4️⃣ Escolha *${this.payment}* como pagamento\n`;
-          msg += `5️⃣ Finalize e aproveite! 🎉\n`;
-        } else {
-          msg += `3️⃣ Escolha *${this.payment}* como pagamento\n`;
-          msg += `4️⃣ Finalize e aproveite! 🎉\n`;
-        }
-        msg += '\n';
+        msg += `⚠️ Atenção: Preço pode mudar a qualquer hora.\n\n`;
 
-        if (this.showNotes && this.notes) msg += `📌 *Obs:* ${this.notes}\n\n`;
+        if (this.showLink && this.link) msg += `Compre aqui: ${this.link}\n\n`;
 
-        msg += `━━━━━━━━━━━━━━━━━\n`;
-        if (hasCoupon) {
-          msg += `⚡ *CORRE!* Aproveite porque às vezes esse cupom esgota em minutos ou até segundos!\n`;
-        } else {
-          msg += `⚡ *CORRE!* Essa oferta pode acabar a qualquer momento!\n`;
-        }
-        msg += `🔔 Me siga para mais promoções assim!`;
+        msg += `⚡ Corre, porque o cupom esgota em minutos ou até segundos!`;
 
         return msg;
       },
