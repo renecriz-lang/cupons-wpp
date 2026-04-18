@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerador de Cupons WhatsApp</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+
+  <!-- Toastify.js -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+
+  <!-- Tippy.js -->
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans:    ['Inter', 'sans-serif'],
+            display: ['Poppins', 'sans-serif'],
+          },
+          colors: {
+            dark: {
+              900: '#0d1117',
+              800: '#1a1a2e',
+              700: '#16213e',
+              600: '#0f3460',
+              500: '#1e2a3a',
+            },
+            wpp:   { DEFAULT: '#25d366', dark: '#1aad54', light: '#dcf8c6' },
+            brand: { DEFAULT: '#25d366', dark: '#1aad54' },
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    /* ── Reset e base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #1a1a2e;
+      color: #e8e8f2;
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection { background: rgba(37,211,102,.2); }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #1a1a2e; }
+    ::-webkit-scrollbar-thumb { background: #252545; border-radius: 99px; }
+
+    /* ── Inputs ── */
+    .field-input {
+      background: #0f3460;
+      border: 1.5px solid #252545;
+      border-radius: 8px;
+      color: #e8e8f2;
+      padding: .6rem .85rem;
+      font-size: .875rem;
+      width: 100%;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .field-input:focus {
+      border-color: #25d366;
+      box-shadow: 0 0 0 3px rgba(37,211,102,.15);
+    }
+    .field-input::placeholder { color: #5a5a7a; }
+    select.field-input {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238080a8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right .75rem center;
+      background-size: 15px;
+      background-color: #0f3460;
+      padding-right: 2.2rem;
+      cursor: pointer;
+    }
+    textarea.field-input { resize: vertical; min-height: 80px; line-height: 1.6; }
+    label.field-label {
+      font-size: .72rem;
+      font-weight: 600;
+      color: #8080a8;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      display: flex;
+      align-items: center;
+      gap: .3rem;
+    }
+    .optional-tag {
+      font-size: .62rem;
+      font-weight: 400;
+      color: #5a5a7a;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    /* ── Cards ── */
+    .card-base {
+      background: #16213e;
+      border: 1px solid #252545;
+      border-radius: 14px;
+      box-shadow: 0 4px 28px rgba(0,0,0,.45);
+    }
+
+    /* ── Botões ── */
+    .btn-wpp {
+      background: #25d366;
+      color: #0d1117;
+      font-weight: 700;
+      border-radius: 8px;
+      padding: .7rem 1.2rem;
+      font-size: .9rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      width: 100%;
+      transition: background .2s, transform .15s, box-shadow .2s;
+      cursor: pointer;
+      border: none;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-wpp:hover { background: #1aad54; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(37,211,102,.35); }
+    .btn-wpp:active { transform: translateY(0); }
+    .btn-wpp.copied { background: #1aad54; animation: pop .3s ease; }
+
+    .btn-ghost {
+      background: #0f3460;
+      color: #8080a8;
+      border: 1px solid #252545;
+      border-radius: 8px;
+      padding: .6rem 1rem;
+      font-size: .85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      cursor: pointer;
+      transition: all .2s;
+      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
+    }
+    .btn-ghost:hover { color: #e8e8f2; border-color: #5a5a7a; }
+
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.04); }
+      100% { transform: scale(1); }
+    }
+
+    /* ── WhatsApp Bubble ── */
+    .wpp-bg {
+      background: #0b141a;
+      border-radius: 10px;
+      padding: 1rem;
+      min-height: 220px;
+    }
+    .wpp-bubble {
+      background: #1f2c34;
+      border-radius: 0 12px 12px 12px;
+      padding: .9rem 1rem;
+      position: relative;
+      box-shadow: 0 1px 3px rgba(0,0,0,.35);
+    }
+    .wpp-bubble::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -8px;
+      border-right: 8px solid #1f2c34;
+      border-top: 8px solid transparent;
+    }
+    .wpp-text {
+      font-size: .82rem;
+      line-height: 1.75;
+      color: #e9edef;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    }
+    .wpp-bold   { font-weight: 700; }
+    .wpp-strike { text-decoration: line-through; color: #8696a0; }
+    .wpp-code   { font-family: 'Courier New', monospace; background: rgba(255,255,255,.08); border-radius: 3px; padding: 0 .3em; font-size: .8rem; letter-spacing: .03em; }
+    .wpp-time   { text-align: right; font-size: .67rem; color: #8696a0; margin-top: .5rem; }
+    .wpp-img    { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: .75rem; }
+
+    /* ── Badge de plataforma no select ── */
+    .select-wrap { position: relative; }
+    .select-emoji {
+      position: absolute;
+      right: 2.4rem; top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    /* ── Upload area ── */
+    .upload-area {
+      border: 2px dashed #252545;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      position: relative;
+    }
+    .upload-area:hover { border-color: #25d366; background: rgba(37,211,102,.05); }
+    .upload-area input[type="file"] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer;
+      width: 100%; height: 100%;
+    }
+    .img-preview-wrap { position: relative; border-radius: 8px; overflow: hidden; }
+    .img-preview-wrap img { width: 100%; max-height: 160px; object-fit: cover; border-radius: 8px; }
+    .btn-remove-img {
+      position: absolute; top: .4rem; right: .4rem;
+      background: rgba(0,0,0,.7); color: #fff;
+      border: none; border-radius: 50%;
+      width: 24px; height: 24px; font-size: .7rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Histórico ── */
+    .history-item {
+      background: #16213e;
+      border: 1px solid #252545;
+      border-radius: 10px;
+      padding: .8rem 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .history-item:hover { border-color: #25d366; background: #0f3460; }
+    .history-btn {
+      background: #0f3460;
+      border: 1px solid #252545;
+      color: #8080a8;
+      border-radius: 6px;
+      padding: .25rem .5rem;
+      font-size: .7rem;
+      cursor: pointer;
+      transition: all .2s;
+      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
+    }
+    .history-btn:hover { color: #e8e8f2; border-color: #5a5a7a; }
+    .history-btn.copy:hover { color: #25d366; border-color: #25d366; }
+    .history-btn.del:hover  { color: #ff5555; border-color: #ff5555; }
+
+    /* ── Tippy dark override ── */
+    .tippy-box[data-theme~='dark'] {
+      background: #0f3460;
+      color: #e8e8f2;
+      border: 1px solid #252545;
+      font-size: .75rem;
+    }
+    .tippy-box[data-theme~='dark'] .tippy-arrow::before { border-top-color: #0f3460; }
+
+    /* ── Preview empty ── */
+    .preview-empty { text-align: center; padding: 2rem 1rem; color: #5a5a7a; font-size: .82rem; }
+
+    /* ── Field toggle ── */
+    .field-toggle {
+      width: 28px; height: 15px;
+      background: #252545;
+      border-radius: 99px;
+      cursor: pointer;
+      position: relative;
+      appearance: none;
+      border: none;
+      outline: none;
+      transition: background .2s;
+      flex-shrink: 0;
+    }
+    .field-toggle:checked { background: #25d366; }
+    .field-toggle::after {
+      content: '';
+      position: absolute;
+      width: 11px; height: 11px;
+      background: #fff;
+      border-radius: 50%;
+      top: 2px; left: 2px;
+      transition: transform .2s;
+    }
+    .field-toggle:checked::after { transform: translateX(13px); }
+    .field-disabled { opacity: .35; pointer-events: none; }
+  </style>
+</head>
+<body x-data="cuponsApp()" x-init="init()">
+
+<!-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ -->
+<header class="sticky top-0 z-50 border-b" style="background:#16213e;border-color:#252545;">
+  <div class="flex items-center justify-between px-4 py-3 max-w-6xl mx-auto">
+
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-wpp flex items-center justify-center text-dark-900 font-bold text-lg flex-shrink-0">
+        <i class="fa-brands fa-whatsapp"></i>
+      </div>
+      <div>
+        <div class="font-display font-bold text-base leading-tight">
+          Cupons <span style="color:#25d366">WPP</span>
+        </div>
+        <div class="text-xs hidden sm:block" style="color:#8080a8;">Gerador de mensagens para WhatsApp</div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button class="btn-ghost text-xs"
+        data-tippy-content="Limpar formulário"
+        @click="confirmClear()">
+        <i class="fa-solid fa-trash-can"></i>
+        <span class="hidden sm:inline">Limpar</span>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     LAYOUT PRINCIPAL
+══════════════════════════════════════════ -->
+<div class="max-w-6xl mx-auto px-4 py-6 grid gap-6 lg:grid-cols-2 lg:items-start">
+
+  <!-- ─── COLUNA DO FORMULÁRIO ─── -->
+  <div class="card-base animate__animated animate__fadeInLeft">
+
+    <div class="flex items-center gap-2 px-5 py-4 border-b" style="border-color:#252545;">
+      <div class="w-7 h-7 rounded flex items-center justify-center text-sm" style="background:rgba(37,211,102,.15);color:#25d366;">
+        <i class="fa-solid fa-pen-to-square"></i>
+      </div>
+      <span class="font-semibold text-sm">Dados da Oferta</span>
+    </div>
+
+    <div class="p-5 flex flex-col gap-4">
+
+      <!-- Plataforma -->
+      <div class="flex flex-col gap-1.5">
+        <label class="field-label"><i class="fa-solid fa-store"></i> Plataforma</label>
+        <div class="select-wrap">
+          <select class="field-input" x-model="platform">
+            <option value="mercadolivre">Mercado Livre</option>
+            <option value="shopee">Shopee</option>
+            <option value="amazon">Amazon</option>
+            <option value="casasbahia">Casas Bahia</option>
+            <option value="magalu">Magazine Luiza</option>
+            <option value="americanas">Americanas</option>
+            <option value="outro">Outro</option>
+          </select>
+          <span class="select-emoji" x-text="platformData.emoji"></span>
+        </div>
+      </div>
+
+      <!-- Nome do produto -->
+      <div class="flex flex-col gap-1.5">
+        <label class="field-label"><i class="fa-solid fa-box"></i> Nome do Produto</label>
+        <input type="text" class="field-input" x-model="productName"
+          placeholder="Ex: Fone Bluetooth JBL Tune 510BT" />
+      </div>
+
+      <!-- Preços -->
+      <div class="grid grid-cols-2 gap-3">
+        <div class="flex flex-col gap-1.5">
+          <label class="field-label justify-between">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-tag"></i> Preço Original <span class="optional-tag">(opcional)</span></span>
+            <input type="checkbox" class="field-toggle" x-model="showOriginalPrice" />
+          </label>
+          <div :class="!showOriginalPrice && 'field-disabled'">
+            <input type="text" class="field-input" x-model="originalPrice" placeholder="Ex: 249,90" />
+          </div>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="field-label"><i class="fa-solid fa-circle-check" style="color:#25d366"></i> Preço Final</label>
+          <input type="text" class="field-input" x-model="finalPrice" placeholder="Ex: 149,90" />
+        </div>
+      </div>
+
+      <!-- Pagamento -->
+      <div class="flex flex-col gap-1.5">
+        <label class="field-label"><i class="fa-solid fa-credit-card"></i> Forma de Pagamento</label>
+        <select class="field-input" x-model="payment">
+          <option value="Pix">💚 Pix</option>
+          <option value="Cartão de Crédito">💳 Cartão de Crédito</option>
+          <option value="Boleto">🧾 Boleto</option>
+          <option value="qualquer forma de pagamento">💰 Qualquer forma</option>
+        </select>
+      </div>
+
+      <!-- Cupom + Desconto -->
+      <div class="grid grid-cols-2 gap-3">
+        <div class="flex flex-col gap-1.5">
+          <label class="field-label justify-between">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-ticket"></i> Cupom <span class="optional-tag">(opcional)</span></span>
+            <input type="checkbox" class="field-toggle" x-model="showCoupon" />
+          </label>
+          <div :class="!showCoupon && 'field-disabled'" class="relative">
+            <input type="text" class="field-input" style="padding-right:3rem"
+              x-model="coupon"
+              @input="coupon = coupon.toUpperCase()"
+              placeholder="Ex: PROMO10" />
+            <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-bold px-1.5 py-0.5 rounded"
+              style="background:rgba(37,211,102,.12);color:#25d366;font-size:.6rem;">ABC</span>
+          </div>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="field-label justify-between">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-percent"></i> Desconto <span class="optional-tag">(opcional)</span></span>
+            <input type="checkbox" class="field-toggle" x-model="showDiscount" />
+          </label>
+          <div :class="!showDiscount && 'field-disabled'">
+            <input type="text" class="field-input" x-model="discount" placeholder="Ex: 10% ou R$15" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Link -->
+      <div class="flex flex-col gap-1.5">
+        <label class="field-label justify-between">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-link"></i> Link do Produto (afiliado) <span class="optional-tag">(opcional)</span></span>
+          <input type="checkbox" class="field-toggle" x-model="showLink" />
+        </label>
+        <div :class="!showLink && 'field-disabled'">
+          <input type="url" class="field-input" x-model="link" placeholder="https://..." />
+        </div>
+      </div>
+
+      <!-- Observações -->
+      <div class="flex flex-col gap-1.5">
+        <label class="field-label justify-between">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-note-sticky"></i> Observações <span class="optional-tag">(opcional)</span></span>
+          <input type="checkbox" class="field-toggle" x-model="showNotes" />
+        </label>
+        <div :class="!showNotes && 'field-disabled'">
+          <textarea class="field-input" x-model="notes"
+            placeholder="Ex: Frete grátis! Estoque limitadíssimo."></textarea>
+        </div>
+      </div>
+
+      <!-- Imagem -->
+      <div class="flex flex-col gap-1.5">
+        <label class="field-label justify-between">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-image"></i> Imagem do Produto <span class="optional-tag">(opcional, só visualização)</span></span>
+          <input type="checkbox" class="field-toggle" x-model="showImage" />
+        </label>
+        <div :class="!showImage && 'field-disabled'">
+          <div x-show="!imageDataUrl" class="upload-area" @dragover.prevent @drop.prevent="handleDrop($event)">
+            <input type="file" accept="image/*" @change="handleImage($event)" />
+            <i class="fa-solid fa-cloud-arrow-up text-2xl mb-1" style="color:#8080a8;"></i>
+            <p class="text-xs mt-1" style="color:#8080a8;">Clique ou arraste uma imagem aqui</p>
+          </div>
+          <div x-show="imageDataUrl" class="img-preview-wrap">
+            <img :src="imageDataUrl" alt="Preview" />
+            <button class="btn-remove-img" @click="removeImage()">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ações -->
+      <div class="flex gap-2 pt-1">
+        <button class="btn-wpp" @click="generate()"
+          data-tippy-content="Gera a mensagem e salva no histórico">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          Gerar Mensagem
+        </button>
+        <button class="btn-ghost" @click="confirmClear()"
+          data-tippy-content="Limpar todos os campos">
+          <i class="fa-solid fa-rotate-left"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── COLUNA DO PREVIEW ─── -->
+  <div class="flex flex-col gap-5 lg:sticky lg:top-20">
+
+    <!-- Preview card -->
+    <div class="card-base animate__animated animate__fadeInRight">
+
+      <div class="flex items-center justify-between px-5 py-4 border-b" style="border-color:#252545;">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded flex items-center justify-center text-sm" style="background:rgba(37,211,102,.15);color:#25d366;">
+            <i class="fa-solid fa-eye"></i>
+          </div>
+          <span class="font-semibold text-sm">Preview WhatsApp</span>
+        </div>
+        <span class="text-xs px-2 py-0.5 rounded-full font-semibold"
+          style="background:rgba(37,211,102,.12);color:#25d366;"
+          x-text="platformData.name || 'Personalizado'"></span>
+      </div>
+
+      <div class="p-4">
+        <div class="wpp-bg">
+          <div class="wpp-bubble">
+            <img x-show="imageDataUrl && showImage" :src="imageDataUrl" class="wpp-img" alt="" />
+            <div class="wpp-text" x-show="currentMessage" x-html="previewHtml"></div>
+            <div class="preview-empty" x-show="!currentMessage">
+              <i class="fa-brands fa-whatsapp text-3xl mb-2 block" style="color:#252545;"></i>
+              Preencha os dados e clique em<br><strong>Gerar Mensagem</strong>
+            </div>
+            <div class="wpp-time" x-show="currentMessage" x-text="currentTime"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contador de chars -->
+      <div x-show="currentMessage" class="text-right text-xs px-5 pb-2" style="color:#5a5a7a;">
+        <span x-text="currentMessage.length.toLocaleString('pt-BR')"></span> caracteres
+      </div>
+
+      <!-- Botão copiar -->
+      <div class="px-5 pb-5 flex flex-col gap-2">
+        <button class="btn-wpp" id="btn-copy-main"
+          :disabled="!currentMessage"
+          :class="!currentMessage ? 'opacity-40 cursor-not-allowed' : ''"
+          @click="copyMessage()">
+          <i class="fa-regular fa-copy"></i>
+          Copiar Mensagem
+        </button>
+        <button class="btn-ghost justify-center"
+          x-show="imageDataUrl && showImage"
+          @click="copyImage()"
+          data-tippy-content="Copia a imagem para o clipboard">
+          <i class="fa-regular fa-image"></i>
+          Copiar Imagem
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Status das libs (colapsável) -->
+    <div class="card-base animate__animated animate__fadeInRight" style="animation-delay:.1s">
+      <details>
+        <summary class="flex items-center gap-2 px-5 py-3 cursor-pointer select-none text-sm font-semibold" style="color:#8080a8;list-style:none;">
+          <i class="fa-solid fa-circle-nodes text-xs" style="color:#25d366;"></i>
+          Libs ativas
+          <i class="fa-solid fa-chevron-down text-xs ml-auto"></i>
+        </summary>
+        <div class="px-5 pb-4 grid gap-1.5 text-xs" style="color:#8080a8;">
+          <div class="flex items-center justify-between">
+            <span>Tailwind CSS</span>
+            <span class="px-1.5 py-0.5 rounded font-bold" style="background:rgba(37,211,102,.12);color:#25d366;">✓ CDN</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>Alpine.js</span>
+            <span class="px-1.5 py-0.5 rounded font-bold" style="background:rgba(37,211,102,.12);color:#25d366;">✓ CDN</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>Font Awesome 6</span>
+            <span class="px-1.5 py-0.5 rounded font-bold" style="background:rgba(37,211,102,.12);color:#25d366;">✓ CDN</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>SweetAlert2</span>
+            <span class="px-1.5 py-0.5 rounded font-bold" style="background:rgba(37,211,102,.12);color:#25d366;">✓ CDN</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>Toastify.js</span>
+            <span class="px-1.5 py-0.5 rounded font-bold" style="background:rgba(37,211,102,.12);color:#25d366;">✓ CDN</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>Tippy.js</span>
+            <span class="px-1.5 py-0.5 rounded font-bold" style="background:rgba(37,211,102,.12);color:#25d366;">✓ CDN</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>Clipboard.js</span>
+            <span class="px-1.5 py-0.5 rounded font-bold" style="background:rgba(37,211,102,.12);color:#25d366;">✓ CDN</span>
+          </div>
+        </div>
+      </details>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     HISTÓRICO
+══════════════════════════════════════════ -->
+<div class="max-w-6xl mx-auto px-4 pb-10">
+  <div class="flex items-center justify-between mb-3">
+    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider" style="color:#8080a8;">
+      <i class="fa-solid fa-clock-rotate-left" style="color:#25d366;"></i>
+      Histórico
+      <span class="px-1.5 py-0.5 rounded-full font-bold" style="background:rgba(37,211,102,.12);color:#25d366;"
+        x-text="history.length"></span>
+    </div>
+    <button class="btn-ghost text-xs" @click="confirmClearHistory()" x-show="history.length">
+      <i class="fa-solid fa-trash"></i> Limpar tudo
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <template x-if="!history.length">
+      <p class="text-xs" style="color:#5a5a7a;">Nenhuma mensagem gerada ainda.</p>
+    </template>
+    <template x-for="entry in history" :key="entry.id">
+      <div class="history-item" @click="restorePreview(entry)">
+        <span class="text-xl flex-shrink-0" x-text="entry.platformEmoji"></span>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-semibold truncate" x-text="entry.name"></div>
+          <div class="flex flex-wrap gap-2 text-xs mt-0.5" style="color:#8080a8;">
+            <span x-show="entry.price">💰 R$ <span x-text="entry.price"></span></span>
+            <span x-show="entry.payment" x-text="entry.payment"></span>
+            <span x-show="entry.coupon">🎟️ <span x-text="entry.coupon"></span></span>
+            <span style="color:#5a5a7a;" x-text="entry.timestamp"></span>
+          </div>
+        </div>
+        <div class="flex gap-1.5 flex-shrink-0">
+          <button class="history-btn copy"
+            @click.stop="copyHistoryEntry(entry)"
+            data-tippy-content="Copiar mensagem">
+            <i class="fa-regular fa-copy"></i> Copiar
+          </button>
+          <button class="history-btn del"
+            @click.stop="deleteHistory(entry.id)"
+            data-tippy-content="Remover">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+    </template>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════ -->
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+<script src="https://unpkg.com/tippy.js@6/dist/tippy.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+
+<script>
+  /* ──────────────────────────────────────────────
+     CONSTANTES
+  ────────────────────────────────────────────── */
+  const PLATFORM_DATA = {
+    mercadolivre: { emoji: '🛒', name: 'Mercado Livre' },
+    shopee:       { emoji: '🛍️', name: 'Shopee' },
+    amazon:       { emoji: '📦', name: 'Amazon' },
+    casasbahia:   { emoji: '🏠', name: 'Casas Bahia' },
+    magalu:       { emoji: '🏬', name: 'Magazine Luiza' },
+    americanas:   { emoji: '🔴', name: 'Americanas' },
+    outro:        { emoji: '🎯', name: '' },
+  };
+
+  const STORAGE_KEY = 'cupons_wpp_v2';
+  const MAX_HISTORY = 5;
+
+  /* ──────────────────────────────────────────────
+     ALPINE.JS — ESTADO PRINCIPAL
+  ────────────────────────────────────────────── */
+  function cuponsApp() {
+    return {
+      /* campos do form */
+      platform:      'mercadolivre',
+      productName:   '',
+      originalPrice: '',
+      finalPrice:    '',
+      payment:       'Pix',
+      coupon:        '',
+      discount:      '',
+      link:          '',
+      notes:         '',
+      imageDataUrl:  '',
+
+      /* toggles opcionais */
+      showOriginalPrice: true,
+      showCoupon:        true,
+      showDiscount:      true,
+      showLink:          true,
+      showNotes:         true,
+      showImage:         true,
+
+      /* estado da app */
+      currentMessage: '',
+      currentTime:    '',
+      history:        [],
+
+      /* ── computados ── */
+      get platformData() {
+        return PLATFORM_DATA[this.platform] || PLATFORM_DATA.outro;
+      },
+
+      get previewHtml() {
+        return this.renderWppText(this.currentMessage);
+      },
+
+      /* ── inicialização ── */
+      init() {
+        this.history = this.loadHistory();
+        this.refreshTime();
+        setInterval(() => this.refreshTime(), 30000);
+
+        this.$nextTick(() => {
+          tippy('[data-tippy-content]', {
+            theme: 'dark',
+            animation: 'shift-away',
+            placement: 'top',
+          });
+        });
+      },
+
+      refreshTime() {
+        this.currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      },
+
+      /* ── gerar mensagem ── */
+      generate() {
+        if (!this.productName && !this.finalPrice) {
+          this.toast('⚠️ Preencha pelo menos o nome ou preço do produto!', 'error');
+          return;
+        }
+        this.currentMessage = this.buildMessage();
+        this.refreshTime();
+        this.saveToHistory();
+        this.toast('✨ Mensagem gerada com sucesso!', 'success');
+
+        if (window.innerWidth < 1024) {
+          this.$nextTick(() => {
+            document.querySelector('.lg\\:sticky')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        }
+      },
+
+      /* ── construir texto ── */
+      buildMessage() {
+        const pd = this.platformData;
+        const name = this.productName || 'Produto';
+        let msg = '';
+
+        msg += `${pd.emoji} *${name}* 🔥\n`;
+        if (pd.name) msg += `📍 ${pd.name}\n`;
+        msg += '\n';
+
+        if (this.showOriginalPrice && this.originalPrice) msg += `~~💸 De: R$ ${this.originalPrice}~~\n`;
+        msg += `✅ *Por: R$ ${this.finalPrice || '0,00'}* no *${this.payment}*\n\n`;
+
+        const hasCoupon = this.showCoupon && this.coupon;
+        if (hasCoupon) {
+          msg += `🎟️ *Cupom:* \`${this.coupon}\``;
+          if (this.showDiscount && this.discount) msg += ` → *${this.discount} OFF*`;
+          msg += '\n\n';
+        }
+
+        if (this.showLink && this.link) msg += `🔗 *Link do produto:*\n${this.link}\n\n`;
+
+        msg += `📋 *Como usar:*\n`;
+        msg += `1️⃣ Acesse o link acima\n`;
+        msg += `2️⃣ Adicione o produto ao carrinho\n`;
+        if (hasCoupon) {
+          msg += `3️⃣ No checkout, insira o cupom: *${this.coupon}*\n`;
+          msg += `4️⃣ Escolha *${this.payment}* como pagamento\n`;
+          msg += `5️⃣ Finalize e aproveite! 🎉\n`;
+        } else {
+          msg += `3️⃣ Escolha *${this.payment}* como pagamento\n`;
+          msg += `4️⃣ Finalize e aproveite! 🎉\n`;
+        }
+        msg += '\n';
+
+        if (this.showNotes && this.notes) msg += `📌 *Obs:* ${this.notes}\n\n`;
+
+        msg += `━━━━━━━━━━━━━━━━━\n`;
+        if (hasCoupon) {
+          msg += `⚡ *CORRE!* Aproveite porque às vezes esse cupom esgota em minutos ou até segundos!\n`;
+        } else {
+          msg += `⚡ *CORRE!* Essa oferta pode acabar a qualquer momento!\n`;
+        }
+        msg += `🔔 Me siga para mais promoções assim!`;
+
+        return msg;
+      },
+
+      /* ── renderizar preview WhatsApp ── */
+      renderWppText(raw) {
+        if (!raw) return '';
+        let s = raw
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+
+        s = s.replace(/~~(.*?)~~/g, '<span class="wpp-strike">$1</span>');
+        s = s.replace(/\*([^*\n]+)\*/g, '<span class="wpp-bold">$1</span>');
+        s = s.replace(/`([^`]+)`/g, '<span class="wpp-code">$1</span>');
+        s = s.replace(/\n/g, '<br>');
+        return s;
+      },
+
+      /* ── copiar ── */
+      async copyMessage(msg) {
+        const text = msg || this.currentMessage;
+        if (!text) { this.toast('⚠️ Gere uma mensagem primeiro!', 'error'); return; }
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          const ta = Object.assign(document.createElement('textarea'), {
+            value: text, style: 'position:fixed;opacity:0'
+          });
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        const btn = document.getElementById('btn-copy-main');
+        if (btn && !msg) {
+          const orig = btn.innerHTML;
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+        }
+        this.toast('📋 Mensagem copiada para o clipboard!', 'success');
+      },
+
+      copyHistoryEntry(entry) {
+        this.copyMessage(entry.message);
+      },
+
+      async copyImage() {
+        if (!this.imageDataUrl) return;
+        try {
+          const res = await fetch(this.imageDataUrl);
+          const blob = await res.blob();
+          await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+          this.toast('🖼️ Imagem copiada para o clipboard!', 'success');
+        } catch {
+          this.toast('❌ Não foi possível copiar a imagem neste navegador', 'error');
+        }
+      },
+
+      /* ── imagem ── */
+      handleImage(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => { this.imageDataUrl = ev.target.result; };
+        reader.readAsDataURL(file);
+      },
+
+      handleDrop(e) {
+        const file = e.dataTransfer.files[0];
+        if (!file || !file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = ev => { this.imageDataUrl = ev.target.result; };
+        reader.readAsDataURL(file);
+      },
+
+      removeImage() {
+        this.imageDataUrl = '';
+      },
+
+      /* ── limpar form ── */
+      confirmClear() {
+        Swal.fire({
+          title: 'Limpar formulário?',
+          text: 'Todos os campos serão apagados.',
+          icon: 'warning',
+          background: '#16213e',
+          color: '#e8e8f2',
+          confirmButtonText: '<i class="fa-solid fa-trash-can"></i> Limpar',
+          confirmButtonColor: '#ff5555',
+          showCancelButton: true,
+          cancelButtonText: 'Cancelar',
+          cancelButtonColor: '#0f3460',
+        }).then(r => { if (r.isConfirmed) this.clearForm(); });
+      },
+
+      clearForm() {
+        this.productName = this.originalPrice = this.finalPrice = '';
+        this.coupon = this.discount = this.link = this.notes = '';
+        this.platform = 'mercadolivre';
+        this.payment = 'Pix';
+        this.imageDataUrl = '';
+        this.currentMessage = '';
+        this.showOriginalPrice = this.showCoupon = this.showDiscount = true;
+        this.showLink = this.showNotes = this.showImage = true;
+        this.toast('🗑️ Formulário limpo!', 'success');
+      },
+
+      /* ── histórico ── */
+      loadHistory() {
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+        catch { return []; }
+      },
+
+      saveHistory() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.history));
+      },
+
+      saveToHistory() {
+        if (!this.productName) return;
+        if (this.history.length && this.history[0].message === this.currentMessage) return;
+
+        this.history.unshift({
+          id:            Date.now(),
+          platform:      this.platform,
+          platformEmoji: this.platformData.emoji,
+          name:          this.productName,
+          price:         this.finalPrice,
+          payment:       this.payment,
+          coupon:        this.coupon,
+          message:       this.currentMessage,
+          timestamp:     new Date().toLocaleString('pt-BR'),
+        });
+
+        if (this.history.length > MAX_HISTORY) this.history = this.history.slice(0, MAX_HISTORY);
+        this.saveHistory();
+      },
+
+      deleteHistory(id) {
+        this.history = this.history.filter(h => h.id !== id);
+        this.saveHistory();
+        this.toast('🗑️ Removido do histórico', 'success');
+      },
+
+      confirmClearHistory() {
+        Swal.fire({
+          title: 'Limpar histórico?',
+          text: 'As últimas mensagens serão removidas.',
+          icon: 'question',
+          background: '#16213e',
+          color: '#e8e8f2',
+          confirmButtonText: 'Limpar tudo',
+          confirmButtonColor: '#ff5555',
+          showCancelButton: true,
+          cancelButtonText: 'Cancelar',
+          cancelButtonColor: '#0f3460',
+        }).then(r => {
+          if (r.isConfirmed) {
+            this.history = [];
+            this.saveHistory();
+            this.toast('🗑️ Histórico limpo!', 'success');
+          }
+        });
+      },
+
+      restorePreview(entry) {
+        this.currentMessage = entry.message;
+        this.refreshTime();
+        this.toast('👁️ Preview restaurado!', 'success');
+        if (window.innerWidth < 1024) {
+          this.$nextTick(() => {
+            document.querySelector('.lg\\:sticky')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        }
+      },
+
+      /* ── toast Toastify ── */
+      toast(msg, type = 'success') {
+        const colors = {
+          success: 'linear-gradient(135deg,#25d366,#1aad54)',
+          error:   'linear-gradient(135deg,#ff5555,#cc0000)',
+          info:    'linear-gradient(135deg,#0ea5e9,#0369a1)',
+        };
+        Toastify({
+          text: msg,
+          duration: 3000,
+          gravity: 'bottom',
+          position: 'right',
+          style: {
+            background: colors[type] || colors.info,
+            borderRadius: '10px',
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '.85rem',
+            fontWeight: '500',
+            padding: '10px 18px',
+            boxShadow: '0 4px 20px rgba(0,0,0,.4)',
+          },
+          stopOnFocus: true,
+        }).showToast();
+      },
+    };
+  }
+</script>
+
+</body>
+</html>
