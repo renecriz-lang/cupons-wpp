@@ -532,15 +532,24 @@
         <span x-text="currentMessage.length.toLocaleString('pt-BR')"></span> caracteres
       </div>
 
-      <!-- Botão copiar -->
+      <!-- Botões copiar -->
       <div class="px-5 pb-5 flex flex-col gap-2">
-        <button class="btn-wpp" id="btn-copy-main"
-          :disabled="!currentMessage"
-          :class="!currentMessage ? 'opacity-40 cursor-not-allowed' : ''"
-          @click="copyMessage()">
-          <i class="fa-regular fa-copy"></i>
-          Copiar Mensagem
-        </button>
+        <div class="flex gap-2">
+          <button class="btn-wpp" id="btn-copy-main"
+            :disabled="!currentMessage"
+            :class="!currentMessage ? 'opacity-40 cursor-not-allowed' : ''"
+            @click="copyMessage()">
+            <i class="fa-regular fa-copy"></i>
+            <span>Copiar Oferta</span>
+          </button>
+          <button class="btn-wpp" id="btn-copy-coupon"
+            :disabled="!(showCoupon && coupon)"
+            :class="!(showCoupon && coupon) ? 'opacity-40 cursor-not-allowed' : ''"
+            @click="copyCoupon()">
+            <i class="fa-solid fa-ticket"></i>
+            <span>Copiar Cupom</span>
+          </button>
+        </div>
         <button class="btn-ghost justify-center"
           x-show="imageDataUrl && showImage"
           @click="copyImage()"
@@ -826,14 +835,34 @@
           document.execCommand('copy');
           document.body.removeChild(ta);
         }
-        const btn = document.getElementById('btn-copy-main');
-        if (btn && !msg) {
-          const orig = btn.innerHTML;
-          btn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
-          btn.classList.add('copied');
-          setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
-        }
+        if (!msg) this.flashBtn('btn-copy-main', '<i class="fa-solid fa-check"></i> <span>✅ Copiado!</span>');
         this.toast('📋 Mensagem copiada para o clipboard!', 'success');
+      },
+
+      async copyCoupon() {
+        if (!this.showCoupon || !this.coupon) { this.toast('⚠️ Nenhum cupom ativo!', 'error'); return; }
+        try {
+          await navigator.clipboard.writeText(this.coupon);
+        } catch {
+          const ta = Object.assign(document.createElement('textarea'), {
+            value: this.coupon, style: 'position:fixed;opacity:0'
+          });
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        this.flashBtn('btn-copy-coupon', '<i class="fa-solid fa-check"></i> <span>✅ Copiado!</span>');
+        this.toast('🎟️ Cupom copiado para o clipboard!', 'success');
+      },
+
+      flashBtn(id, html) {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        const orig = btn.innerHTML;
+        btn.innerHTML = html;
+        btn.classList.add('copied');
+        setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
       },
 
       copyHistoryEntry(entry) {
